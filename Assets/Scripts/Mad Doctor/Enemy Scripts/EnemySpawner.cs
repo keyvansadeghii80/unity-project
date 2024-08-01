@@ -1,0 +1,50 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class EnemySpawner : MonoBehaviour
+{
+    public static EnemySpawner instance;
+
+    [SerializeField]
+    private GameObject enemyPrefab;
+
+    private GameObject newEnemy;
+
+    [SerializeField]
+    private Transform[] spawnPosition;// دو نقطه برای تخمگزاری
+
+    [SerializeField]
+    private int enemySpawnLimit = 10;
+
+    [SerializeField]
+    private List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    [SerializeField]
+    private float minSpawnTime = 2f, maxSpawnTime = 5f;     
+
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+    }
+    private void Start()
+    {
+        Invoke("SpawnEnemy", Random.Range(minSpawnTime, maxSpawnTime));
+    }
+    void SpawnEnemy()
+    {
+        if (spawnedEnemies.Count == enemySpawnLimit)
+            return;
+
+        newEnemy = Instantiate(enemyPrefab, spawnPosition[Random.Range(0, spawnPosition.Length)].position, Quaternion.identity);
+        spawnedEnemies.Add(newEnemy);
+        Invoke("SpawnEnemy", Random.Range(minSpawnTime, maxSpawnTime));//برای بارها تولبد سدن
+    }
+
+    public void EnemyDied(GameObject enemy)
+    {
+        spawnedEnemies.Remove(enemy);
+    }
+}
